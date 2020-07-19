@@ -27,5 +27,5 @@ checksec後可發現沒有保護，所以可以塞shellcode
 後rbp就會改到我們要的某個位置上，由於整個encrypt，包含fgets的部分都是rbp based的  
 所以return address我們可以直接塞 **[0x401257]** 重跑一次encrypt  
 此時fgets就會讀到rbp - 0x50的位置上面去  
-shellcode的位置就是已知了(rbp-0x50)，所以第二次fgets把這個值跟shellcode塞到return address去即可拿到shell
+shellcode的位置就是已知了(rbp-0x50)，所以第二次fgets把這個值跟shellcode塞到return address去即可拿到shell  
 最後由於這一段有做一個簡單的+0xd的加密，在shellcode上面做-0xd的動作補回來即可

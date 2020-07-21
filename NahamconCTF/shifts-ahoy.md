@@ -17,9 +17,11 @@ fgets能塞的大小是0x60，buffer是72(0x48)，明顯是有buffer overflow可
 整個encypt的stack frame是0x50，算上rbp跟return address，相當於0x50+0x08*2 = 0x60  
 也就是說這題的overflow剛剛好是可以蓋到return address的長度，這是這一題考驗的地方  
 
+![image](https://github.com/sarafciel/PwnWriteup/blob/master/NahamconCTF/shifts-ahoy5.png)
+
 checksec後可發現沒有保護，所以可以塞shellcode  
 剩下來的難點就是怎麼去leak出來shellcode的address，或是把shellcode塞到我們已知的位置上去  
-這邊採用後者，利用stack pivoting先把rbp改成某個.data段上面的位置:
+這邊採用後者，利用stack pivoting先把rbp改成某個.data段或.bss段上面的位置:
 
 ![image](https://github.com/sarafciel/PwnWriteup/blob/master/NahamconCTF/shifts-ahoy4.png)
 
@@ -28,4 +30,7 @@ checksec後可發現沒有保護，所以可以塞shellcode
 所以return address我們可以直接塞 **[0x401257]** 重跑一次encrypt  
 此時fgets就會讀到rbp - 0x50的位置上面去  
 shellcode的位置就是已知了(rbp-0x50)，所以第二次fgets把這個值跟shellcode塞到return address去即可拿到shell  
-最後由於這一段有做一個簡單的+0xd的加密，在shellcode上面做-0xd的動作補回來即可
+最後由於這一段有做一個簡單的+0xd的加密，在shellcode上面做-0xd的動作補回來即可  
+又或著因為加密會先用strlen抓長度，我們也可以在payload前面加一個0x00，這樣就能直接繞過加密部分。
+
+

@@ -1,23 +1,23 @@
-![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/secret-flag/secret-flag.png)
+![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/the-library/the-library1.png)
 
 先下checksec，可以看到除了NX其他都沒有開  
 
-![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/secret-flag/secret-flag2.png)
+![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/the-library/the-library2.png)
 
 下objdump -d看assembly，這題的code很單純，main開了一個大小為0x10的buffer  
 但read的時候長度是0x100，所以我們有bof的空間  
 由於NX有開，本題沒意外就是要寫rop chain來解了  
 
-![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/secret-flag/secret-flag3.png)
+![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/the-library/the-library3.png)
 
 先看一下got hajacking時可以用的東西，有setbuf、puts跟read  
 
-![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/secret-flag/secret-flag3.png)
+![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/the-library/the-library4.png)
 
 下ropgadget看有那些東西可用，可以看到有一個pop rdi，  
 所以我們可以改掉rdi之後跳到puts上面做leak  
 
-![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/secret-flag/secret-flag3.png)
+![image](https://github.com/sarafciel/PwnWriteup/blob/master/redpwnCTF/the-library/the-library5.png)
 
 由於本題很好心的有附上使用的libc.so，所以直接拿one-gadget找可以用的execve("//bin//sh")  
 這裡挑了第二個offset[0x4f322]，因為條件比較簡單  
